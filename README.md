@@ -89,3 +89,4 @@ You can integrate with an IdP like JumpCloud via various protocols:
 ### Getting Started
 * You can choose to build the OpenVPN server on AWS or locally-hosted (via [Vagrant](https://developer.hashicorp.com/vagrant/downloads)).
 * Your public IP will be whitelisted by default as configured in `securitygroup.tf`.
+* Refer to the steps [here](https://sonykey2003.medium.com/integrate-openvpn-with-jumpclouds-radius-as-a-service-b0cac64578a9) for JC RADIUS integration. 
