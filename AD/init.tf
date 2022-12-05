@@ -18,11 +18,6 @@ data "cloudinit_config" "ad" {
               )
   }
 
-  /*part {
-    filename = "prep-ad.ps1"
-    content_type = "text/x-shellscript"
-    content = templatefile("${path.module}/test.ps1",{p1 = "parameter1", p2 = "parameter2"})
-  }*/
   
 }
 

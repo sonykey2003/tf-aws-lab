@@ -1,6 +1,12 @@
 # Shawn's Terraform Playground - AWS
 A Place to dump my creation of use cases :-)
 
+## Prerequisites
+* Installed [Terraform](https://developer.hashicorp.com/terraform/downloads) and clone this repo.
+* Input your AWS access/secret keys in `secret_vars.tf` - see the sample in `exampleSecret_vars.tf`.
+* (Optional) Exempt the file to be uploaded to any repo by adding this file name in `.gitignore`.
+* (Optional) Fill in the info in `stateconfig.tf` if you want to escrow your [Terraform State]
+
 ## Use Case 01 - A Portable AD Environment
 For those who wanted to spin up an AD env and test the lights out. 
 i.e. Migrating from AD to JumpCloud via [ADMU](https://github.com/TheJumpCloud/jumpcloud-ADMU) utility. 
@@ -13,14 +19,10 @@ i.e. Migrating from AD to JumpCloud via [ADMU](https://github.com/TheJumpCloud/j
 * The secrets defined as variables will have exposures in `user-data` (in the instance setting) by design, so pls limit the scope of this project for **testing ONLY**, and remember to run `terraform destroy` once you are done. 
 
 ### Getting Started
-
-* Installed [Terraform](https://developer.hashicorp.com/terraform/downloads) and clone this repo.
-
-* Input your AWS access/secret keys in `secret_vars.tf` - see the sample in `exampleSecret_vars.tf`, and exempt the file to be uploaded to any repo by adding this file name in `.gitignore` (optional).
 * Fill in the desired passwords, user names and the domain name in `ad_vars.tf`.
 * Choose and fill in the CIDR block of your designated subnet in `networking.tf`, "allow-internal-all" section -> `ingress` block. 
 * (Optional) Exempt `ad_vars.tf`in `.gitignore` to limit the exposure of secrets. 
-* (Optional) Fill in the info in `stateconfig.tf` if you want to escrow your [Terraform State](https://developer.hashicorp.com/terraform/language/settings/backends/configuration) to S3. Or remove this file. 
+* (https://developer.hashicorp.com/terraform/language/settings/backends/configuration) to S3. Or remove this file. 
 * (Optional) Modify, add or remove the OUs to anything you like, in `prep-ad.ps1`, line 63:
 ```pwsh
 $newOUs = "CS_Dept","SE_Dept","FIN_Dept"
@@ -70,3 +72,20 @@ dc01_ip_info = [
 ]
 note = "Please give it 5~10 min before RDP-ing as the AD script is busy doing its job, go grab a coffee! :-) "
 ```
+
+## Use Case 02 - OpenVPN Server Template
+You can integrate with an IdP like JumpCloud via various protocols:
+
+* RADIUS
+* LDAP
+* SAML 2.0
+
+
+### What It Does
+* Create an EC2 instance with `t3.small` spec.
+* Auto provision OpenVPN installation from the [official source](https://openvpn.net/vpn-software-packages/ubuntu/). 
+
+
+### Getting Started
+* You can choose to build the OpenVPN server on AWS or locally-hosted (via [Vagrant](https://developer.hashicorp.com/vagrant/downloads)).
+* Your public IP will be whitelisted by default as configured in `securitygroup.tf`.
