@@ -1,20 +1,55 @@
 # Default VPC 
-data "aws_vpc" "default" {
-  default = true
-} 
+resource "aws_vpc" "adlab-vpc" {
+  cidr_block = "10.10.0.0/16"
+  enable_dns_hostnames = true
+  tags = {
+    Name = "adlab-vpc"
+  }
+}
+
+# Create a new internet getaway
+resource "aws_internet_gateway" "adlb-gw" {
+  vpc_id = aws_vpc.adlab-vpc.id
+  tags = {
+    Name = "adlab-wan-gw"
+  }
+}
+
+# Create a new route table
+resource "aws_route_table" "ad-public-crt" {
+    vpc_id = aws_vpc.adlab-vpc.id
+    
+    route {
+        //associated subnet can reach everywhere
+        cidr_block = "0.0.0.0/0" 
+        //CRT uses this IGW to reach internet
+        gateway_id = aws_internet_gateway.adlb-gw.id
+    }
+    
+    tags = {
+        Name = "ad-public-crt"
+    }
+}
+
+# Associating the crt to the ad subnet
+resource "aws_route_table_association" "ad-public-crt"{
+    subnet_id = aws_subnet.adlab-subnet.id
+    route_table_id = aws_route_table.ad-public-crt.id
+}
 
 # Creating internal networks
-resource "aws_subnet" "main" {
-  vpc_id     = data.aws_vpc.default.id
-  cidr_block = "0.0.0.0/25" # Find a free subnet within your VPC
+resource "aws_subnet" "adlab-subnet" {
+  vpc_id     = aws_vpc.adlab-vpc.id
+  cidr_block = "10.10.10.0/24" 
   map_public_ip_on_launch = true
   tags = {
-    Name = "ADEnv"
+    Name = "adlab-subnet"
   }
 }
 # Creating security groups for internet connectivities
 resource "aws_security_group" "allow-rdp" {
   name        = "allow-rdp"
+  vpc_id      =  aws_vpc.adlab-vpc.id
   description = "security group that allows rdp from my home IP and all egress traffic"
   egress {
     from_port   = 0
@@ -51,6 +86,7 @@ resource "aws_security_group" "allow-rdp" {
 # Creating security groups for private subnet connectivities
 resource "aws_security_group" "allow-internal-all" {
   name        = "allow-internal-all"
+  vpc_id      =  aws_vpc.adlab-vpc.id
   description = "security group that allows all traffic from the same subnet"
   egress {
     from_port   = 0
@@ -63,7 +99,7 @@ resource "aws_security_group" "allow-internal-all" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/16"] # Find a free subnet within your VPC
+    cidr_blocks = ["10.10.10.0/24"] # Find a free subnet within your VPC
   }
   
  
