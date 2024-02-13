@@ -3,7 +3,7 @@
 variable "amis" {
   type = map(any)
   default = {
-    "ap-southeast-1" = "ami-04fd9ca55428190ad"
+    "ap-southeast-1" = "ami-0adcf082d85f6a445"
     "ap-southeast-2" = "ami-0aea49ff8f0efa479"
   }
 }

@@ -6,7 +6,7 @@ data "aws_vpc" "default" {
 # Creating internal networks
 resource "aws_subnet" "main" {
   vpc_id     = data.aws_vpc.default.id
-  cidr_block = ""
+  cidr_block = "0.0.0.0/25" # Find a free subnet within your VPC
   map_public_ip_on_launch = true
   tags = {
     Name = "ADEnv"
@@ -63,7 +63,7 @@ resource "aws_security_group" "allow-internal-all" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["your_subnet_cidr_block"]
+    cidr_blocks = ["0.0.0.0/16"] # Find a free subnet within your VPC
   }
   
  

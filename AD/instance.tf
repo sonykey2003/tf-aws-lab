@@ -1,7 +1,6 @@
 provider "aws" {
-  access_key = var.AWS_ACCESS_KEY
-  secret_key = var.AWS_SECRET_KEY
-  region     = var.AWS_REGION
+
+  profile = "your-awscli-profile"
 }
 
 resource "aws_instance" "dc01" {
@@ -15,7 +14,7 @@ resource "aws_instance" "dc01" {
   vpc_security_group_ids = [aws_security_group.allow-rdp.id,aws_security_group.allow-internal-all.id]
   subnet_id = aws_subnet.main.id
   tags = {
-    Name = "win2019-dc01"
+    Name = "win2022-dc01"
   }
 
   connection {
@@ -46,7 +45,7 @@ resource "aws_instance" "c01" {
   vpc_security_group_ids = [aws_security_group.allow-rdp.id,aws_security_group.allow-internal-all.id]
   subnet_id = aws_subnet.main.id
   tags = {
-    Name = "win2019-client01"
+    Name = "win2022-client01"
   }
 
   connection {
