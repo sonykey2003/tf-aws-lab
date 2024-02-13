@@ -27,10 +27,10 @@ resource "aws_instance" "dc01" {
     use_ntlm = true
     insecure = true
     user     = "Administrator"
-    password = "${var.admin_pw}"
+    password = var.admin_pw
   }
 
-  user_data = "${data.cloudinit_config.ad.rendered}"
+  user_data = data.cloudinit_config.ad.rendered
 }
 
 resource "aws_instance" "c01" {
