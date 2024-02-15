@@ -23,21 +23,19 @@
         $nic = Get-NetIPAddress | ? {$_.PrefixOrigin -like "Dhcp"}
         Set-DnsClientServerAddress -InterfaceIndex  $nic.InterfaceIndex -ServerAddresses $nic.IPAddress
             
-        # Step 2 Adding AD feature
-        <#
-        The acceptable values for this parameter are:
-        Windows Server 2003: 2 or Win2003
-        Windows Server 2008: 3 or Win2008
-        Windows Server 2008 R2: 4 or Win2008R2
-        Windows Server 2012: 5 or Win2012
-        Windows Server 2012 R2: 6 or Win2012R2
-        Windows Server 2016: 7 or WinThreshold
-        #>
-
-        # Step 3 install AD and reboot
+        # Step 2 install AD and reboot
         $adpw = "${ad_pw}"| ConvertTo-SecureString -AsPlainText -Force
         $dominame = "${domain_name}"
-        $ADfunclevel = "Win2012R2"
+        $ADfunclevel = "WinThreshold"
+        <#
+            The acceptable values for this parameter are:
+            Windows Server 2003: 2 or Win2003
+            Windows Server 2008: 3 or Win2008
+            Windows Server 2008 R2: 4 or Win2008R2
+            Windows Server 2012: 5 or Win2012
+            Windows Server 2012 R2: 6 or Win2012R2
+            Windows Server 2016: 7 or WinThreshold
+        #>
 
         Install-WindowsFeature -name AD-Domain-Services -IncludeManagementTools -ErrorAction SilentlyContinue
 
