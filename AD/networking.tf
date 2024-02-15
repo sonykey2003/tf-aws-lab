@@ -1,15 +1,15 @@
 # Default VPC 
-resource "aws_vpc" "adlab-vpc" {
+resource "aws_vpc" "int-lab-vpc" {
   cidr_block = "10.10.0.0/16"
   enable_dns_hostnames = true
   tags = {
-    Name = "adlab-vpc"
+    Name = "int-lab-vpc"
   }
 }
 
 # Create a new internet getaway
 resource "aws_internet_gateway" "adlb-gw" {
-  vpc_id = aws_vpc.adlab-vpc.id
+  vpc_id = aws_vpc.int-lab-vpc.id
   tags = {
     Name = "adlab-wan-gw"
   }
@@ -17,7 +17,7 @@ resource "aws_internet_gateway" "adlb-gw" {
 
 # Create a new route table
 resource "aws_route_table" "ad-public-crt" {
-    vpc_id = aws_vpc.adlab-vpc.id
+    vpc_id = aws_vpc.int-lab-vpc.id
     
     route {
         //associated subnet can reach everywhere
@@ -39,7 +39,7 @@ resource "aws_route_table_association" "ad-public-crt"{
 
 # Creating internal networks
 resource "aws_subnet" "adlab-subnet" {
-  vpc_id     = aws_vpc.adlab-vpc.id
+  vpc_id     = aws_vpc.int-lab-vpc.id
   cidr_block = "10.10.10.0/24" 
   map_public_ip_on_launch = true
   tags = {
@@ -49,7 +49,7 @@ resource "aws_subnet" "adlab-subnet" {
 # Creating security groups for internet connectivities
 resource "aws_security_group" "allow-rdp" {
   name        = "allow-rdp"
-  vpc_id      =  aws_vpc.adlab-vpc.id
+  vpc_id      =  aws_vpc.int-lab-vpc.id
   description = "security group that allows rdp from my home IP and all egress traffic"
   egress {
     from_port   = 0
@@ -86,7 +86,7 @@ resource "aws_security_group" "allow-rdp" {
 # Creating security groups for private subnet connectivities
 resource "aws_security_group" "allow-internal-all" {
   name        = "allow-internal-all"
-  vpc_id      =  aws_vpc.adlab-vpc.id
+  vpc_id      =  aws_vpc.int-lab-vpc.id
   description = "security group that allows all traffic from the same subnet"
   egress {
     from_port   = 0
