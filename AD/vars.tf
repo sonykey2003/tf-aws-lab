@@ -1,6 +1,40 @@
 
-#a list of win10 AMIs
-variable "amis" {
+# AWS Vars
+variable "my-aws-profile" {
+  type = string
+  default = "shawn-sedemo-admin"
+}
+
+variable "AWS_REGION" {
+  default = "ap-southeast-1"
+}
+
+
+# Windows Server Instances
+variable "ad-lab-instances" {
+  type = map(object({
+    ami           = string
+    role          = string
+  }))
+  default = {
+    
+    instances1 = {
+      role = "DC"
+      ami = "ami-0adcf082d85f6a445" # Win Srv 2022,SG,public
+    }
+    instances2 = {
+      role = "member"
+      ami = "ami-0adcf082d85f6a445" # Win Srv 2022,SG,public
+    }
+    instances3 = {
+      role = "client"
+      ami = "ami-0b699e1dc1bc97390" # Win 10 pro,SG,prviate
+    }
+  }
+}
+
+# Linux Server AMIs
+variable "linux-amis" {
   type = map(any)
   default = {
     "ap-southeast-1" = "ami-0adcf082d85f6a445"
@@ -8,12 +42,10 @@ variable "amis" {
   }
 }
 
-#auto gen your public ip
+# API for attaining public IP
 data "http" "myip" {
   url = "http://ipv4.icanhazip.com"
   #request_body = "request body"
 }
 
-variable "AWS_REGION" {
-  default = "ap-southeast-1"
-}
+# Networking Vars
