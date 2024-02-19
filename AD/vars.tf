@@ -1,5 +1,9 @@
 
 # AWS Vars
+variable "your-jc-username" {
+  type = string
+}
+
 variable "my-aws-profile" {
   type = string
   default = "shawn-sedemo-admin"
@@ -28,7 +32,7 @@ variable "ad-lab-instances" {
     }
     instances3 = {
       role = "client"
-      ami = "ami-0b699e1dc1bc97390" # Win 10 pro,SG,prviate
+      ami = "ami-04f734550d5bf8483" # Win 10 pro,SG,prviate
     }
   }
 }
