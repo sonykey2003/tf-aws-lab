@@ -1,144 +1,113 @@
-# AWS Auth - Using SSO profile
-provider "aws" {
-
-  profile = var.my-aws-profile
-}
-
-
-# Building the instances
-resource "aws_instance" "ad-lab" {
-  for_each = var.ad-lab-instances
-  ami = each.value.ami
-  instance_type = "t2.medium"
-  user_data_replace_on_change = true
-  associate_public_ip_address = true
-  key_name               = aws_key_pair.key_pair.key_name
-  get_password_data      = false
-  vpc_security_group_ids = [aws_security_group.allow-rdp.id,aws_security_group.allow-internal-all.id]
-  subnet_id = aws_subnet.adlab-subnet.id
+# Default VPC 
+resource "aws_vpc" "int-lab-vpc" {
+  cidr_block = "10.10.0.0/16"
+  enable_dns_hostnames = true
   tags = {
-    Name = each.value.role == "client" ? "win10-${each.value.role}-${var.your-jc-username}":"winSRV2022-${each.value.role}-${var.your-jc-username}"
+    Name = "int-lab-vpc_${chomp(data.http.myip.response_body)}_${var.your-jc-username}"
   }
-
-  connection {
-    host     = coalesce(self.public_ip, self.private_ip)
-    type     = "winrm"
-    timeout  = "5m"
-    https    = true
-    port     = 5986
-    use_ntlm = true
-    insecure = true
-    user     = "Administrator"
-    password = var.admin_pw
-  }
-  user_data = each.value.role == "DC" ? data.cloudinit_config.ad.rendered:data.cloudinit_config.client.rendered
 }
 
-# Orchestrated Outputs
-output "DC_Administrator_Username" {
-  value = "Administrator"
-  
-}
-
-output "DC_Administrator_Password" {
-  value = nonsensitive(var.admin_pw)
-  
-}
-
-output "Client_Cred" {
-  value = "Please refer to the PWM item '(AWS) Win10 Instance' in 'SE Demo Environment' folder."
-}
-
-output "public_ip_info" {
-  value = [for instance in aws_instance.ad-lab: "${instance.tags.Name}:${instance.public_ip}"]
-}
-
-output "public_dns_info" {
-  value = [for instance in aws_instance.ad-lab: "${instance.tags.Name}:${instance.public_dns}"]
-}
-
-
-output "private_ip_info" {
-  value = [for instance in aws_instance.ad-lab: "${instance.tags.Name}:${instance.private_ip}"]
-}
-
-output "note" {
-  value = "Please give it 5~10 min before RDP-ing as the AD script is busy doing its job, go grab a coffee! :-) "
-}
-
-
-
-
-
-# AWS Auth - Using SSO profile
-provider "aws" {
-
-  profile = var.my-aws-profile
-}
-
-
-# Building the instances
-resource "aws_instance" "ad-lab" {
-  for_each = var.ad-lab-instances
-  ami = each.value.ami
-  instance_type = "t2.medium"
-  user_data_replace_on_change = true
-  associate_public_ip_address = true
-  key_name               = aws_key_pair.key_pair.key_name
-  get_password_data      = false
-  vpc_security_group_ids = [aws_security_group.allow-rdp.id,aws_security_group.allow-internal-all.id]
-  subnet_id = aws_subnet.adlab-subnet.id
+# Create a new internet getaway
+resource "aws_internet_gateway" "adlb-gw" {
+  vpc_id = aws_vpc.int-lab-vpc.id
   tags = {
-    Name = each.value.role == "client" ? "win10-${each.value.role}-${var.your-jc-username}":"winSRV2022-${each.value.role}-${var.your-jc-username}"
+    Name = "adlab-wan-gw"
+  }
+}
+
+# Create a new route table
+resource "aws_route_table" "ad-public-crt" {
+    vpc_id = aws_vpc.int-lab-vpc.id
+    
+    route {
+        //associated subnet can reach everywhere
+        cidr_block = "0.0.0.0/0" 
+        //CRT uses this IGW to reach internet
+        gateway_id = aws_internet_gateway.adlb-gw.id
+    }
+    
+    tags = {
+        Name = "ad-public-crt"
+    }
+}
+
+# Associating the crt to the ad subnet
+resource "aws_route_table_association" "ad-public-crt"{
+    subnet_id = aws_subnet.adlab-subnet.id
+    route_table_id = aws_route_table.ad-public-crt.id
+}
+
+# Creating internal networks
+resource "aws_subnet" "adlab-subnet" {
+  vpc_id     = aws_vpc.int-lab-vpc.id
+  cidr_block = "10.10.10.0/24" 
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "adlab-subnet"
+  }
+}
+# Creating security groups for internet connectivities
+resource "aws_security_group" "allow-rdp" {
+  name        = "allow-rdp"
+  vpc_id      =  aws_vpc.int-lab-vpc.id
+  description = "security group that allows rdp from my home IP and all egress traffic"
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  connection {
-    host     = coalesce(self.public_ip, self.private_ip)
-    type     = "winrm"
-    timeout  = "5m"
-    https    = true
-    port     = 5986
-    use_ntlm = true
-    insecure = true
-    user     = "Administrator"
-    password = var.admin_pw
+  ingress {
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = "tcp"
+    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
   }
-  user_data = each.value.role == "DC" ? data.cloudinit_config.ad.rendered:data.cloudinit_config.client.rendered
-}
-
-# Orchestrated Outputs
-output "DC_Administrator_Username" {
-  value = "Administrator"
   
+  ingress {
+    from_port   = 5986
+    to_port     = 5986
+    protocol    = "tcp"
+    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
+  }
+  ingress {
+    from_port   = 5985
+    to_port     = 5985
+    protocol    = "tcp"
+    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
+  }
+  tags = {
+    Name = "allow-rdp/winrm"
+  }
+
 }
 
-output "DC_Administrator_Password" {
-  value = nonsensitive(var.admin_pw)
+# Creating security groups for private subnet connectivities
+resource "aws_security_group" "allow-internal-all" {
+  name        = "allow-internal-all"
+  vpc_id      =  aws_vpc.int-lab-vpc.id
+  description = "security group that allows all traffic from the same subnet"
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+   ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["10.10.10.0/24"] # Find a free subnet within your VPC
+  }
   
+ 
+  tags = {
+    Name = "allow-internal-all"
+  }
+
 }
-
-output "Client_Cred" {
-  value = "Please refer to the PWM item '(AWS) Win10 Instance' in 'SE Demo Environment' folder."
-}
-
-output "public_ip_info" {
-  value = [for instance in aws_instance.ad-lab: "${instance.tags.Name}:${instance.public_ip}"]
-}
-
-output "public_dns_info" {
-  value = [for instance in aws_instance.ad-lab: "${instance.tags.Name}:${instance.public_dns}"]
-}
-
-
-output "private_ip_info" {
-  value = [for instance in aws_instance.ad-lab: "${instance.tags.Name}:${instance.private_ip}"]
-}
-
-output "note" {
-  value = "Please give it 5~10 min before RDP-ing as the AD script is busy doing its job, go grab a coffee! :-) "
-}
-
-
 
 
 
