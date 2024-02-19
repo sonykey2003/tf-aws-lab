@@ -3,7 +3,7 @@ resource "aws_vpc" "int-lab-vpc" {
   cidr_block = "10.10.0.0/16"
   enable_dns_hostnames = true
   tags = {
-    Name = "int-lab-vpc"
+    Name = "int-lab-vpc_${chomp(data.http.myip.response_body)}_${var.your-jc-username}"
   }
 }
 
