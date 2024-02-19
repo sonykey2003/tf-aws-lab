@@ -20,9 +20,9 @@ $newOUs = "CS_Dept","SE_Dept","FIN_Dept"
 * Fire it UP!
 * Note: You might need to refresh your SSO token every once in a while by running this:
  `aws sso login --profile your-sso-profile`.
-```zsh
-Terraform plan
-Terraform apply
+```hcl
+Terraform plan -var your-jc-username=$USER
+Terraform apply -var your-jc-username=$USER
 ```
 * Instances' IPs and login info will be presented as output, like:
 ```json
@@ -30,37 +30,22 @@ Outputs:
 
 Administrator_Password = ""
 Administrator_Username = "Administrator"
-c01_dns_info = [
-  [
-    "ip-<public-ip>.ap-southeast-1.compute.amazonaws.com",
-  ],
-  [
-    "ip-<private-ip>.ap-southeast-1.compute.internal",
-  ],
+
+private_ip_info = [
+  "winSRV2022-DC-<username>:<private-ip>",
+  "winSRV2022-member-<username>:<private-ip>",
+  "win10-client-<username>:<private-ip>",
 ]
-c01_ip_info = [
-  [
-    "<public-ip>",
-  ],
-  [
-    "<private-ip>",
-  ],
+public_dns_info = [
+  "winSRV2022-DC-<username>:ec2-<public-ip>.ap-southeast-1.compute.amazonaws.com",
+  "winSRV2022-member-<username>:ec2-<public-ip>.ap-southeast-1.compute.amazonaws.com",
+  "win10-client-<username>:ec2-<public-ip>.ap-southeast-1.compute.amazonaws.com",
 ]
-dc01_dns_info = [
-  [
-    "<public-ip>.ap-southeast-1.compute.amazonaws.com",
-  ],
-  [
-    "<private-ip>.ap-southeast-1.compute.internal",
-  ],
+public_ip_info = [
+  "winSRV2022-DC-<username>:<public-ip>",
+  "winSRV2022-member-<username>:<public-ip>",
+  "win10-client-<username>:<public-ip>",
 ]
-dc01_ip_info = [
-  [
-    "<public-ip>",
-  ],
-  [
-    "<private-ip>",
-  ],
-]
+
 note = "Please give it 5~10 min before RDP-ing as the AD script is busy doing its job, go grab a coffee! :-) "
 ```
