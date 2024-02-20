@@ -10,7 +10,9 @@ i.e. Migrating from AD to JumpCloud via [ADMU](https://github.com/TheJumpCloud/j
 * The secrets defined as variables will have exposures in `user-data` (in the instance setting) by design, so pls limit the scope of this project for **testing ONLY**, and remember to run `terraform destroy` once you are done. 
 
 ### Getting Started
-* Fill in the desired passwords, user names and the domain name in `ad_vars.tf`.
+* Rename file `example_secret_tf` to `ad_vars.tf`.
+* Fill in the desired passwords, user names and the domain name in `ad_vars.tf`. 
+  * **Note**: Never Ever expose this file anywhere. 
 * It will create a new VPC and use `10.10.0.0/16` CIDR, subsequently a subnet `10.10.10.0/24` will be created for placing the VMs. Please make sure it has no conflict in your existing infra. 
 * DO NOT expose `secret.tf` and your tf state file in any occasion, these files contain passwords and secrets. 
 * (Optional) Modify, add or remove the OUs to anything you like, in `prep-ad.ps1`, line 63:
