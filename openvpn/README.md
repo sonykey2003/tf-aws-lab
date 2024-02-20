@@ -8,7 +8,7 @@ You can integrate with an IdP like JumpCloud via various protocols:
 ### What It Does
 * Create an `Ubuntu 22.04`(latest AMI) EC2 instance with `t3.small` spec. 
 * Auto provision OpenVPN installation from the [official source](https://openvpn.net/vpn-software-packages/ubuntu/). 
-
+* Enroll the server to your JC tenant. 
 
 ### Getting Started
 * Create an empty file `linux-key-pair.pem` at the root of the openVPN terraform folder. 
