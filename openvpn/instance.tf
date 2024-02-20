@@ -1,27 +1,20 @@
+# AWS Auth - Using SSO profile
 provider "aws" {
-  access_key = var.AWS_ACCESS_KEY
-  secret_key = var.AWS_SECRET_KEY
-  region     = var.AWS_REGION
-}
 
-
-/*
-resource "aws_key_pair" "mykeypair" {
-  key_name   = "shawn_keypair"
-  public_key = file(var.PATH_TO_PUBLIC_KEY)
+  profile = var.my-aws-profile
 }
-*/
 
 resource "aws_instance" "openvpn" {
-  ami           = data.aws_ami.ubuntu.id# last parameter is the default value
+  ami           = data.aws_ami.ubuntu.id #last parameter is the default value
   instance_type = "t3.small"
   key_name      = aws_key_pair.key_pair.key_name
 
    tags = {
-    Name = "OpenVpn_Srv"
+    Name = "OpenVpn-Srv-${var.your-jc-username}"
   }
 
-  vpc_security_group_ids = [aws_security_group.allow-ssh.id,aws_security_group.allow-openvpn.id]
+  vpc_security_group_ids = [aws_security_group.allow-ssh.id,aws_security_group.allow-internal-all.id,aws_security_group.allow-openvpn.id]
+  subnet_id = aws_subnet.linux-subnet.id
 
   provisioner "file" {
     source      = "./openvpn.sh"
@@ -33,6 +26,13 @@ resource "aws_instance" "openvpn" {
       "chmod +x /tmp/openvpn.sh",
       "sudo sed -i -e 's/\r$//' /tmp/openvpn.sh", # Remove the spurious CR characters.
       "sudo /tmp/openvpn.sh",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo hostnamectl set-hostname OpenVpn-Srv-${var.your-jc-username}",
+      "curl --tlsv1.2 --silent --show-error --header 'x-connect-key: ${var.jc-connect-key}' https://kickstart.jumpcloud.com/Kickstart | sudo bash"
     ]
   }
   connection {

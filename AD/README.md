@@ -11,16 +11,17 @@ i.e. Migrating from AD to JumpCloud via [ADMU](https://github.com/TheJumpCloud/j
 
 ### Getting Started
 * Fill in the desired passwords, user names and the domain name in `ad_vars.tf`.
-* It will create a new VPC and use `10.10.0.0/16` CIDR, make sure it has no conflict in your existing infra. 
-* DO NOT expose `ad_vars.tf` and your tf state file in any occasion, these files contain passwords and secrets. 
+* It will create a new VPC and use `10.10.0.0/16` CIDR, subsequently a subnet `10.10.10.0/24` will be created for placing the VMs. Please make sure it has no conflict in your existing infra. 
+* DO NOT expose `secret.tf` and your tf state file in any occasion, these files contain passwords and secrets. 
 * (Optional) Modify, add or remove the OUs to anything you like, in `prep-ad.ps1`, line 63:
 ```pwsh
 $newOUs = "CS_Dept","SE_Dept","FIN_Dept"
 ```
 * Fire it UP!
-* Note: You might need to refresh your SSO token every once in a while by running this:
- `aws sso login --profile your-sso-profile`.
 ```hcl
+# You might need to refresh your SSO token:
+aws sso login --profile your-sso-profile
+
 Terraform plan -var your-jc-username=$USER
 Terraform apply -var your-jc-username=$USER
 ```
