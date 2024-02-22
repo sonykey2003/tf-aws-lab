@@ -20,7 +20,7 @@ You can integrate with an IdP like JumpCloud via various protocols:
 # You might need to refresh your SSO token:
 aws sso login --profile your-sso-profile
 
-touch linux-key-pair.pem
+
 
 # Plan the changes
 Terraform plan \
@@ -28,7 +28,7 @@ Terraform plan \
  -var jc-connect-key=<your JC Connect Key>
 
 # Apply after the planning
-Terraform apply \
+touch linux-key-pair.pem && chmod 400 linux-key-pair.pem && Terraform apply \
  -var your-jc-username=$USER \
  -var jc-connect-key=<your JC Connect Key>
 ```

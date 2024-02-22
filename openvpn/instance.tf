@@ -25,7 +25,7 @@ resource "aws_instance" "openvpn" {
     inline = [
       "chmod +x /tmp/openvpn.sh",
       "sudo sed -i -e 's/\r$//' /tmp/openvpn.sh", # Remove the spurious CR characters.
-      "sudo /tmp/openvpn.sh",
+      "sudo /tmp/openvpn.sh"
     ]
   }
 
@@ -44,10 +44,14 @@ resource "aws_instance" "openvpn" {
 
 }
 
-output "openvpn_ip_info" {
+output "instance_ip_info" {
   value = ["${aws_instance.openvpn.*.public_ip}","${aws_instance.openvpn.*.private_ip}"]
 }
 
-output "openvpn_dns_info" {
+output "instance_dns_info" {
   value = ["${aws_instance.openvpn.*.public_dns}","${aws_instance.openvpn.*.private_dns}"]
+}
+
+output "openvpn_login_info" {
+  value = ["Login to OpenVPN admin console: https://${aws_instance.openvpn.public_ip}:943","Admin credential can be found in /usr/local/openvpn_as/init.log"]
 }
