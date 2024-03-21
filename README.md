@@ -152,8 +152,6 @@ chmod 400 linux-key-pair.pem
 ```json
 Outputs:
 
-Outputs:
-
 openvpn_dns_info = [
   [
     "ec2-<public_IP>.ap-southeast-1.compute.amazonaws.com",
