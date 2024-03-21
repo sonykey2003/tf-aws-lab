@@ -29,6 +29,7 @@ resource "aws_instance" "openvpn" {
     ]
   }
 
+ # Installing JC agent inline
   provisioner "remote-exec" {
     inline = [
       "sudo hostnamectl set-hostname OpenVpn-Srv-${var.your-jc-username}",
@@ -53,5 +54,5 @@ output "instance_dns_info" {
 }
 
 output "openvpn_login_info" {
-  value = ["Login to OpenVPN admin console: https://${aws_instance.openvpn.public_ip}:943","Admin credential can be found in /usr/local/openvpn_as/init.log"]
+  value = ["Login to OpenVPN admin console: https://${aws_instance.openvpn.public_ip}:943/admin","Admin credential can be found in /usr/local/openvpn_as/init.log"]
 }

@@ -40,7 +40,7 @@ resource "aws_route_table_association" "linux-public-crt"{
 # Creating internal networks
 resource "aws_subnet" "linux-subnet" {
   vpc_id     = aws_vpc.int-lab-vpc.id
-  cidr_block = "10.10.12.0/24" 
+  cidr_block = "10.10.11.0/24" 
   map_public_ip_on_launch = true
   tags = {
     Name = "linux-subnet"
@@ -71,39 +71,6 @@ resource "aws_security_group" "allow-ssh" {
 
 }
 
-resource "aws_security_group" "allow-openvpn" {
-  name        = "allow-openvpn"
-  vpc_id      =  aws_vpc.int-lab-vpc.id
-  description = "security group that allows openvpn ports from my home IP and all egress traffic"
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
-  }
-  ingress {
-    from_port   = 943
-    to_port     = 943
-    protocol    = "tcp"
-    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
-  }
-  ingress {
-    from_port   = 1194
-    to_port     = 1194
-    protocol    = "udp"
-    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
-  }
-  tags = {
-    Name = "allow-openvpn"
-  }
-}
 
 # Creating security groups for private subnet connectivities
 resource "aws_security_group" "allow-internal-all" {
@@ -121,7 +88,7 @@ resource "aws_security_group" "allow-internal-all" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["10.10.12.0/24"] # Find a free subnet within your VPC
+    cidr_blocks = ["10.10.11.0/24"] # Find a free subnet within your VPC
   }
   
  

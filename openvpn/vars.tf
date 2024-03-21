@@ -1,5 +1,5 @@
 
-#ubuntu 20.04LTS for supporting openvpn
+# Getting the latest ubuntu 22.04LTS AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["amazon"]
@@ -36,7 +36,6 @@ variable "your-jc-username" {
 
 variable "my-aws-profile" {
   type = string
-  default = "shawn-sedemo-admin"
 }
 
 

@@ -6,7 +6,6 @@ variable "your-jc-username" {
 
 variable "my-aws-profile" {
   type = string
-  default = "shawn-sedemo-admin"
 }
 
 variable "AWS_REGION" {
