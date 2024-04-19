@@ -13,36 +13,44 @@ variable "AWS_REGION" {
 }
 
 
+# Windows Server AMI
+data "aws_ami" "win2022" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["Windows_Server-2022-English-Full-Base-*"]
+  }
+  filter {
+      name = "virtualization-type"
+      values = ["hvm"]
+  }
+}
+
+
 # Windows Server Instances
 variable "ad-lab-instances" {
   type = map(object({
-    ami           = string
     role          = string
   }))
   default = {
     
     instances1 = {
       role = "DC"
-      ami = "ami-0adcf082d85f6a445" # Win Srv 2022,SG,public
     }
     instances2 = {
       role = "member"
-      ami = "ami-0adcf082d85f6a445" # Win Srv 2022,SG,public
     }
     instances3 = {
       role = "client"
-      ami = "ami-04f734550d5bf8483" # Win 10 pro,SG,prviate
     }
   }
 }
 
-# Linux Server AMIs
-variable "linux-amis" {
-  type = map(any)
-  default = {
-    "ap-southeast-1" = "ami-0adcf082d85f6a445"
-    "ap-southeast-2" = "ami-0aea49ff8f0efa479"
-  }
+variable "ad-lab-client-ami" {
+  type = string
+  default = "ami-04f734550d5bf8483"
 }
 
 # API for attaining public IP

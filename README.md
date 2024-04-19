@@ -7,9 +7,11 @@
 
 ## Prerequisites
 * Installed [Terraform](https://developer.hashicorp.com/terraform/downloads) and clone this repo.
-* Use profile based auth for [AWS Cli](https://developer.hashicorp.com/terraform/install?product_intent=terraform).
-* Setup [SSO for AWS](https://community.jumpcloud.com/t5/best-practices/setting-up-sso-for-aws-iam-or-aws-identity-center/m-p/2702#M123) on your JumpCloud tenant.
-* Please dive into respective folders for each use case, and run Terraform from there.
+* Install [AWS Cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) - recommend using the `GUI installer`.
+* Create an AWS Cli SSO profile as instructed [here](https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html#sso-configure-profile-token-auto-sso).
+  * Once the profile is created, you can login to refresh the SSO token by specifying the profile like [here](https://docs.aws.amazon.com/cli/latest/userguide/sso-using-profile.html). 
+* Setup [SSO for AWS IAM Identity Center](https://community.jumpcloud.com/t5/best-practices/setting-up-sso-for-aws-iam-or-aws-identity-center/m-p/2702#M123) on your JumpCloud tenant.
+* Dive into respective folders for each use case, and run Terraform from there.
 ## Use Case 1 - A Disposable AD Lab
 For those who wanted to spin up an AD env and test the lights out. 
 i.e. Migrating from AD to JumpCloud via [ADMU](https://github.com/TheJumpCloud/jumpcloud-ADMU) utility, JumpCloud AD integration.
@@ -26,20 +28,23 @@ i.e. Migrating from AD to JumpCloud via [ADMU](https://github.com/TheJumpCloud/j
   * **Note**: Never Ever expose this file anywhere. 
 * It will create a new VPC and use `10.10.0.0/16` CIDR, subsequently a subnet `10.10.10.0/24` will be created for placing the VMs. Please make sure it has no conflict in your existing infra. 
 * DO NOT expose `secret.tf` and your tf state file in any occasion, these files contain passwords and secrets. 
-* (Optional) Modify, add or remove the OUs to anything you like, in `prep-ad.ps1`, line 63:
+* (Optional) Modify, add or remove the OUs to anything you like, in `prep-ad.ps1`, line 61:
 ```pwsh
 $newOUs = "CS_Dept","SE_Dept","FIN_Dept"
 ```
 * Fire it UP!
-```hcl
-# You might need to refresh your SSO token:
-aws sso login --profile your-sso-profile
+**Note**: You might need to refresh your SSO token at the begining of every session:
 
+```sh
+aws sso login --profile your-sso-profile
+```
+
+```sh
 Terraform plan -var your-jc-username=$USER
 Terraform apply -var your-jc-username=$USER
 ```
 * Instances' IPs and login info will be presented as output, like:
-```json
+```sh
 Outputs:
 
 Administrator_Password = ""
@@ -174,4 +179,5 @@ openvpn_ip_info = [
 `https://ec2-<public_IP>.ap-southeast-1.compute.amazonaws.com:943`
     * Login credentials can be found on the server `/usr/local/openvpn_as/init.log`
 * Integrate Radius auth with JumpCloud, refer to the steps [here](https://sonykey2003.medium.com/integrate-openvpn-with-jumpclouds-radius-as-a-service-b0cac64578a9) for JC RADIUS integration. 
+
 

@@ -8,7 +8,7 @@ provider "aws" {
 # Building the instances
 resource "aws_instance" "ad-lab" {
   for_each = var.ad-lab-instances
-  ami = each.value.ami
+  ami = each.value.role == "client" ? var.ad-lab-client-ami:data.aws_ami.win2022.id
   instance_type = "t2.medium"
   user_data_replace_on_change = true
   associate_public_ip_address = true
