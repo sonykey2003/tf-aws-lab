@@ -8,8 +8,8 @@ provider "aws" {
 # Building the instances
 resource "aws_instance" "ad-lab" {
   for_each = var.ad-lab-instances
-  ami = each.value.role == "client" ? var.ad-lab-client-ami:data.aws_ami.win2022.id
-  instance_type = "t2.medium"
+  ami = each.value.role == "client" ? var.ad-lab-client-ami[var.AWS_REGION]:data.aws_ami.win2022.id
+  instance_type = each.value.role == "client" ? var.client-size:var.server-size
   user_data_replace_on_change = true
   associate_public_ip_address = true
   key_name               = aws_key_pair.key_pair.key_name

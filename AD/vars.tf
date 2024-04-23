@@ -1,5 +1,6 @@
+# ---------------------------------- Customisable Block Started ---------------------------------- #
 
-# AWS Vars
+# Personal Vars
 variable "your-jc-username" {
   type = string
 }
@@ -8,12 +9,28 @@ variable "my-aws-profile" {
   type = string
 }
 
+# Your default AWS region
 variable "AWS_REGION" {
   default = "ap-southeast-1"
 }
 
+# Defining the VM sizes
+variable "client-size" {
+  type = string
+  default = "t2.medium" #Consider the Free tier EC2 size for cost saving - t2.micro https://aws.amazon.com/ec2/instance-types/t2/
+}
 
-# Windows Server AMI
+variable "server-size" {
+  type = string
+  default = "t2.medium" #Consider the Free tier EC2 size for cost saving - t2.micro https://aws.amazon.com/ec2/instance-types/t2/
+}
+
+# ---------------------------------- Customisable Block ended ---------------------------------- #
+
+
+# DO NOT MODIFY BELOW THIS LINE!
+
+## Windows Server 2022 AMI - Public AMIs
 data "aws_ami" "win2022" {
   most_recent = true
   owners      = ["amazon"]
@@ -28,8 +45,20 @@ data "aws_ami" "win2022" {
   }
 }
 
+## Windows Client (10 pro) AMIs - Private AMIs
+variable "ad-lab-client-ami" {
+  type = map(string)
+  default = {
+    "ap-southeast-1" = "ami-04f734550d5bf8483" #Singapore
+    "ap-south-1" = "ami-02c73ac45d91a3112" #Mumbai
+    "eu-west-2" = "ami-03a65b215724e0c3c" #London
+    "us-east-1" = "ami-04928784f495b5ead" #N.Virginia 
 
-# Windows Server Instances
+  }
+}
+
+
+## Windows Server Instances & Roles
 variable "ad-lab-instances" {
   type = map(object({
     role          = string
@@ -48,15 +77,8 @@ variable "ad-lab-instances" {
   }
 }
 
-variable "ad-lab-client-ami" {
-  type = string
-  default = "ami-04f734550d5bf8483"
-}
-
-# API for attaining public IP
+## API for attaining public IP
 data "http" "myip" {
   url = "http://ipv4.icanhazip.com"
-  #request_body = "request body"
 }
 
-# Networking Vars

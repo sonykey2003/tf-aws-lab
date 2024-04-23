@@ -1,5 +1,36 @@
 
-# Getting the latest ubuntu 22.04LTS AMI
+# ---------------------------------- Customisable Block Started ---------------------------------- #
+
+
+# Personal Vars
+variable "your-jc-username" {
+  type = string
+}
+
+variable "my-aws-profile" {
+  type = string
+}
+
+variable "AWS_REGION" {
+  default = "ap-southeast-1"
+}
+
+variable "instance_username" {
+  default = "ubuntu"
+}
+
+# Defining the VM sizes
+variable "server-size" {
+  type = string
+  default = "t2.small" #Consider the Free tier EC2 size for cost saving - t2.micro https://aws.amazon.com/ec2/instance-types/t2/
+}
+
+
+# ---------------------------------- Customisable Block ended ---------------------------------- #
+
+# DO NOT MODIFY BELOW THIS LINE!
+
+## Getting the latest ubuntu 22.04LTS AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["amazon"]
@@ -14,31 +45,8 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-variable "jc-connect-key" {
-  type = string
-  
-}
-
-#auto gen your public ip
+## API for attaining public IP
 data "http" "myip" {
   url = "http://ipv4.icanhazip.com"
 }
 
-variable "AWS_REGION" {
-  default = "ap-southeast-1"
-}
-
-
-# AWS Vars
-variable "your-jc-username" {
-  type = string
-}
-
-variable "my-aws-profile" {
-  type = string
-}
-
-
-variable "INSTANCE_USERNAME" {
-  default = "ubuntu"
-}

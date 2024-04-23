@@ -1,5 +1,40 @@
+# ---------------------------------- Customisable Block Started ---------------------------------- #
 
-# Getting the latest Linux AMIs from AWS marketplace
+# Personal Vars
+variable "your-jc-username" {
+  type = string
+}
+
+variable "my-aws-profile" {
+  type = string
+}
+
+variable "how-many-servers" {
+  type = number
+}
+
+# Your default AWS region
+variable "AWS_REGION" {
+  default = "ap-southeast-1"
+}
+
+# Defining the VM sizes
+variable "server-size" {
+  type = string
+  default = "t3.small" #Consider the Free tier EC2 size for cost saving - t2.micro https://aws.amazon.com/ec2/instance-types/t2/
+}
+
+
+variable "linux-distro" {
+  type = string
+  default = "ubuntu" # Pick a distro from: ubuntu, rhel, or amzn2
+}
+
+# ---------------------------------- Customisable Block ended ---------------------------------- #
+
+# DO NOT MODIFY BELOW THIS LINE!
+
+## Getting the latest Linux AMIs from AWS marketplace
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["amazon"]
@@ -45,31 +80,28 @@ data "aws_ami" "amzn2" {
   
 }
 
-# AWS Vars
-variable "your-jc-username" {
-  type = string
-}
-
-variable "my-aws-profile" {
-  type = string
-}
-
-variable "INSTANCE_USERNAME" {
-  #default = "ubuntu" # for ubuntu AMIs
-  default = "ec2-user" # for other linux distro AMIs
+locals {
+  linux-ami-id = {
+    "ubuntu" = data.aws_ami.ubuntu.id
+    "rhel"   = data.aws_ami.rhel.id
+    "amzn2" = data.aws_ami.amzn2.id
+    # More can be added here
+  }
 }
 
 
-variable "how-many-servers" {
-  type = number
+# Default Instance username
+variable "instance_username" {
+  type = map(string)
+  default = {
+    "ubuntu" = "ubuntu"
+    "rhel" = "ec2-user"
+    "amzn2" = "ec2-user"
+  }
 }
 
-variable "AWS_REGION" {
-  default = "ap-southeast-1"
-}
 
-
-#auto gen your public ip
+## API for attaining public IP
 data "http" "myip" {
   url = "http://ipv4.icanhazip.com"
 }

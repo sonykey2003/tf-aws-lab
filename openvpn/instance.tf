@@ -6,7 +6,7 @@ provider "aws" {
 
 resource "aws_instance" "openvpn" {
   ami           = data.aws_ami.ubuntu.id #last parameter is the default value
-  instance_type = "t3.small"
+  instance_type = var.server-size
   key_name      = aws_key_pair.key_pair.key_name
 
    tags = {
@@ -39,7 +39,7 @@ resource "aws_instance" "openvpn" {
   connection {
     host        = coalesce(self.public_ip, self.private_ip)
     type        = "ssh"
-    user        = var.INSTANCE_USERNAME
+    user        = var.instance_username
     private_key = file("./linux-key-pair.pem")
   }
 

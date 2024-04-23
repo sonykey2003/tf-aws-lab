@@ -7,10 +7,9 @@ provider "aws" {
 resource "aws_instance" "linuxsrv" {
   count = var.how-many-servers
 
-  #ami           = data.aws_ami.ubuntu.id # Using ubuntu by default
-  ami           = data.aws_ami.rhel.id
-
-  instance_type = "t3.small"
+  #ami           = var.linux-ami-id[var.linux-distro]
+  ami = local.linux-ami-id[var.linux-distro] # Using ubuntu by default
+  instance_type = var.server-size
   key_name      = aws_key_pair.key_pair.key_name
 
    tags = {
@@ -35,7 +34,7 @@ resource "aws_instance" "linuxsrv" {
   connection {
     host        = coalesce(self.public_ip, self.private_ip)
     type        = "ssh"
-    user        = var.INSTANCE_USERNAME
+    user        = var.instance_username[var.linux-distro]
     private_key = file("./linux-key-pair.pem")
   }
 

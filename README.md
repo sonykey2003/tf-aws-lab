@@ -12,6 +12,16 @@
   * Once the profile is created, you can login to refresh the SSO token by specifying the profile like [here](https://docs.aws.amazon.com/cli/latest/userguide/sso-using-profile.html). 
 * Setup [SSO for AWS IAM Identity Center](https://community.jumpcloud.com/t5/best-practices/setting-up-sso-for-aws-iam-or-aws-identity-center/m-p/2702#M123) on your JumpCloud tenant.
 * Dive into respective folders for each use case, and run Terraform from there.
+
+## Customisable Options
+Before we dive into each use case below, there are a few common options you can customise in each `var.tf`:
+* Your preferred AWS region.
+* EC2 Instance type (VM sizes).
+* Your AWS CLI SSO profile name.
+* Your JumpCloud username for instance tagging of ownership. 
+
+And **DO NOT** modify the lines beyond the end of customisable block. 
+
 ## Use Case 1 - A Disposable AD Lab
 For those who wanted to spin up an AD env and test the lights out. 
 i.e. Migrating from AD to JumpCloud via [ADMU](https://github.com/TheJumpCloud/jumpcloud-ADMU) utility, JumpCloud AD integration.
@@ -72,7 +82,6 @@ note = "Please give it 5~10 min before RDP-ing as the AD script is busy doing it
 ## Use Case 2 - A Linux Server Farm
 ### Getting Started
 * Rename file `example_secret_tf` to `secret.tf`.
-* Switch to other regions if your preferred one is not Singapore, in `vars.tf`, at line 16. 
 * Fill in the desired passwords, user names and your JumpCloud [Connect Key](https://jumpcloud.com/support/understand-the-agent) in `secret.tf`. 
   * **Note**: Never Ever expose this file anywhere. 
 * It will create a new VPC and use `10.10.0.0/16` CIDR, subsequently a subnet `10.10.11.0/24` will be created for placing the VMs. Please make sure it has no conflict in your existing infra. 
@@ -128,6 +137,9 @@ You can integrate it with an IdP like JumpCloud via a protocol at your choice:
 * Install the JumpCloud agent and enroll the server to your JC tenant. 
 
 ### Getting Started
+* Rename file `example_secret_tf` to `secret.tf`.
+* Fill in the desired passwords, user names and your JumpCloud [Connect Key](https://jumpcloud.com/support/understand-the-agent) in `secret.tf`. 
+  * **Note**: Never Ever expose this file anywhere. 
 * Create an empty file `linux-key-pair.pem` at the root of the openVPN terraform folder. 
 * It will create a new VPC and use `10.10.0.0/16` CIDR, subsequently a subnet `10.10.12.0/24` will be created for placing the VMs. Please make sure it has no conflict in your existing infra. 
 * Your public IP will be whitelisted by default as configured in `networking.tf`.
