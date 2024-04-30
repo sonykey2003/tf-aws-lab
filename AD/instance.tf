@@ -2,6 +2,7 @@
 provider "aws" {
 
   profile = var.my-aws-profile
+  region = var.AWS_REGION
 }
 
 

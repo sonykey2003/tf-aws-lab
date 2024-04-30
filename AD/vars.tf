@@ -11,8 +11,9 @@ variable "my-aws-profile" {
 
 # Your default AWS region
 variable "AWS_REGION" {
-  default = "ap-southeast-1"
+  default = "ap-southeast-1" 
 }
+
 
 # Defining the VM sizes
 variable "client-size" {

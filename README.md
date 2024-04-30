@@ -14,8 +14,14 @@
 * Dive into respective folders for each use case, and run Terraform from there.
 
 ## Customisable Options
-Before we dive into each use case below, there are a few common options you can customise in each `var.tf`:
+Before we dive into each use case below, there are a few common options you can customise in each `vars.tf`:
 * Your preferred AWS region.
+  * Please sepcify your region (likely tied to where you based) - look for `AWS_REGION`variable, change it accordingly. 
+  * Avaliable regions: 
+    * ap-southeast-1  # Singapore
+    * ap-south-1  # Mumbai
+    * eu-west-2 # London
+    * us-east-1 # N.Virginia 
 * EC2 Instance type (VM sizes).
 * Your AWS CLI SSO profile name.
 * Your JumpCloud username for instance tagging of ownership. 
