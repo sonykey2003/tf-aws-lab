@@ -7,6 +7,8 @@
 
 ## Prerequisites
 * Installed [Terraform](https://developer.hashicorp.com/terraform/downloads) and clone this repo.
+* Set the working directory to this repo by each individual folder - i.e. if you are create an AD lab, go to `./tf-aws-lab/AD`.
+* Run `Terraform init` at the working directory to initialise Terraform.
 * Install [AWS Cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) - recommend using the `GUI installer`.
 * Create an AWS Cli SSO profile as instructed [here](https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html#sso-configure-profile-token-auto-sso).
   * Once the profile is created, you can login to refresh the SSO token by specifying the profile like [here](https://docs.aws.amazon.com/cli/latest/userguide/sso-using-profile.html). 

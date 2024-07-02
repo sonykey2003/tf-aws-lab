@@ -11,7 +11,7 @@ variable "my-aws-profile" {
 
 # Your default AWS region
 variable "AWS_REGION" {
-  default = "ap-southeast-1" 
+  default = "eu-west-2" 
 }
 
 
